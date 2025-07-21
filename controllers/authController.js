@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { randomNearbyLocation } = require('../utils/location').default;
-const { randomBluetoothId } = require('../utils/bluetooth').default;
+const { randomNearbyLocation } = require('../utils/location');
+const { randomBluetoothId } = require('../utils/bluetooth');
 
 const hasValidLocation = (location) => {
   return location && typeof location.lat === 'number' && typeof location.long === 'number';

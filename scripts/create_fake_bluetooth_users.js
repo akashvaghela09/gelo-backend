@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const User = require('../models/User');
 const connectDB = require('../config/db');
-const { randomBluetoothId } = require('../utils/bluetooth').default;
+const { randomBluetoothId } = require('../utils/bluetooth');
 
 function generateUsername(name) {
   // Lowercase, replace spaces with dots, remove non-alphanumeric except dot, append 6 random numbers

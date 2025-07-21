@@ -24,7 +24,7 @@ const randomNearbyLocation = (lat, long, maxDistanceMeters = 20) => {
   };
 };
 
-export default {
+module.exports = {
   getDistanceFromLatLonInMeters,
   randomNearbyLocation
 }; 

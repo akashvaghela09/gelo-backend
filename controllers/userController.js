@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { getDistanceFromLatLonInMeters } = require('../utils/location').default;
+const { getDistanceFromLatLonInMeters } = require('../utils/location');
 
 const updateUserProfile = async (req, res) => {
   try {

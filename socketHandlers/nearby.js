@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { getDistanceFromLatLonInMeters } = require('../utils/location').default;
+const { getDistanceFromLatLonInMeters } = require('../utils/location');
 
 // In-memory map: socketId -> { userId, location, bluetoothId }
 const connectedUsers = new Map();
