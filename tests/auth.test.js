@@ -22,7 +22,7 @@ describe('Auth Endpoints', () => {
 
   afterAll(async () => {
     await User.deleteMany({ username: testUser.username });
-    await mongoose.connection.close();
+    await mongoose.disconnect();
     delete process.env.NODE_ENV;
     delete process.env.PORT;
   });
