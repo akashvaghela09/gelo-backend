@@ -14,8 +14,10 @@ const register = async (req, res) => {
     if (!username || !password || !name || !contactNumber || !shortBio) {
       return res.status(400).json({ message: 'All required fields must be provided' });
     }
+    // Convert username to lowercase
+    const usernameLower = username.toLowerCase();
     // Check if user exists
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ username: usernameLower });
     if (existingUser) {
       return res.status(409).json({ message: 'Username already exists.' });
     }
@@ -23,7 +25,7 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     // Create user
     const user = new User({
-      username,
+      username: usernameLower,
       password: hashedPassword,
       name,
       contactNumber,
@@ -44,7 +46,9 @@ const login = async (req, res) => {
     if (!username || !password) {
       return res.status(400).json({ message: 'Username and password are required.' });
     }
-    const user = await User.findOne({ username });
+    // Convert username to lowercase for case-insensitive login
+    const usernameLower = username.toLowerCase();
+    const user = await User.findOne({ username: usernameLower });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials.' });
     }

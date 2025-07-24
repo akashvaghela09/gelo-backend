@@ -31,7 +31,7 @@ const updateUserProfile = async (req, res) => {
         for (let i = 0; i < toCreate; i++) {
           const fakeLoc = randomNearbyLocation(lat, long, 50);
           newDummies.push(new User({
-            username: `dummy_gps_${Date.now()}_${i}_${Math.floor(Math.random()*10000)}`,
+            username: `dummy_gps_${i}_${Math.floor(Math.random()*10000)}`,
             password: 'dummy',
             name: `Dummy GPS User ${i+1}`,
             contactNumber: '0000000000',
