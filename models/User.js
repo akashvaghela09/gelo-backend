@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     lat: { type: Number },
     long: { type: Number }
   },
-  bluetoothId: { type: String },
   updatedAt: { type: Date, default: Date.now },
   test: { type: Boolean, default: false }
 });

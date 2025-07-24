@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { randomNearbyLocation } = require('../utils/location');
-const { randomBluetoothId } = require('../utils/bluetooth');
 
 const hasValidLocation = (location) => {
   return location && typeof location.lat === 'number' && typeof location.long === 'number';
@@ -10,11 +9,10 @@ const hasValidLocation = (location) => {
 
 const register = async (req, res) => {
   try {
-    const { username, password, name, contactNumber, shortBio, location, bluetoothId } = req.body;
-    // Require either both lat and long, or bluetoothId
-    const hasLocation = hasValidLocation(location);
-    if (!username || !password || !name || !contactNumber || !shortBio || (!hasLocation && !bluetoothId)) {
-      return res.status(400).json({ message: 'All required fields must be provided, including either both lat and long or bluetoothId.' });
+    const { username, password, name, contactNumber, shortBio, location } = req.body;
+    // Require either both lat and long
+    if (!username || !password || !name || !contactNumber || !shortBio) {
+      return res.status(400).json({ message: 'All required fields must be provided' });
     }
     // Check if user exists
     const existingUser = await User.findOne({ username });
@@ -30,41 +28,10 @@ const register = async (req, res) => {
       name,
       contactNumber,
       shortBio,
-      location: hasLocation ? location : undefined,
-      bluetoothId,
+      location: hasValidLocation(location) ? location : undefined,
       test: false
     });
     await user.save();
-    // Always create 3 fake GPS users (if GPS provided) and 2 fake Bluetooth users
-    const fakeUsers = [];
-    if (hasLocation) {
-      for (let i = 0; i < 3; i++) {
-        const fakeLoc = randomNearbyLocation(location.lat, location.long, 20);
-        fakeUsers.push(new User({
-          username: `test_gps_${username}_${i}_${Date.now()}`,
-          password: hashedPassword,
-          name: `Fake GPS User ${i+1}`,
-          contactNumber: '0000000000',
-          shortBio: 'I am a fake nearby user.',
-          location: fakeLoc,
-          test: true
-        }));
-      }
-    }
-    for (let i = 0; i < 2; i++) {
-      fakeUsers.push(new User({
-        username: `test_bt_${username}_${i}_${Date.now()}`,
-        password: hashedPassword,
-        name: `Fake Bluetooth User ${i+1}`,
-        contactNumber: '0000000000',
-        shortBio: 'I am a fake Bluetooth user.',
-        bluetoothId: randomBluetoothId(),
-        test: true
-      }));
-    }
-    if (fakeUsers.length > 0) {
-      await User.insertMany(fakeUsers);
-    }
     res.status(201).json({ message: 'User registered successfully.' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -92,16 +59,25 @@ const login = async (req, res) => {
       name: user.name,
       contactNumber: user.contactNumber,
       shortBio: user.shortBio,
-      location: user.location,
-      bluetoothId: user.bluetoothId
+      location: user.location
     }});
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
+const checkUsername = async (req, res) => {
+  const username = req.query.username;
+  if (!username) {
+    return res.status(400).json({ available: false, message: 'Username is required' });
+  }
+  const exists = await User.exists({ username });
+  res.json({ available: !exists });
+};
+
 module.exports = {
   hasValidLocation,
   register,
-  login
+  login,
+  checkUsername
 }; 
